@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::post('/students/{student}/courses', [StudentController::class, 'updateCou
 //* Teacher routes
 Route::resource('teachers', TeacherController::class);
 
-Route::view('/courses', 'dashboard');  // Replace with actual courses view
+//* Course routes
+Route::resource('courses', CourseController::class);
+
+// For assigning/unassigning students to course
+Route::post('/courses/{course}/students', [CourseController::class, 'updateStudents'])->name('courses.updateStudents');
 
 Route::redirect('/', '/dashboard');

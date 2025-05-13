@@ -1,60 +1,66 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <h2 class="text-2xl font-bold">Students</h2>
-        <a href="{{ route('students.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add
-            Student</a>
+        <a href="{{ route('students.create') }}"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Add Student</a>
     </div>
 
     @if (session('success'))
         <div class="mb-4 text-green-600">{{ session('success') }}</div>
     @endif
 
-    <table class="min-w-full bg-white rounded shadow">
-        <thead>
-            <tr>
-                <th class="py-2 px-4 border-b">Name</th>
-                <th class="py-2 px-4 border-b">Email</th>
-                <th class="py-2 px-4 border-b">DOB</th>
-                <th class="py-2 px-4 border-b">Courses</th>
-                <th class="py-2 px-4 border-b">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($students as $student)
+    <div class="overflow-x-auto rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200 bg-white">
+            <thead class="bg-gray-50">
                 <tr>
-                    <td class="py-2 px-4 border-b">{{ $student->first_name }} {{ $student->last_name }}</td>
-                    <td class="py-2 px-4 border-b">{{ $student->email }}</td>
-                    <td class="py-2 px-4 border-b">{{ \Carbon\Carbon::parse($student->date_of_birth)->format('M d, Y') }}
-                    </td>
-                    <td class="py-2 px-4 border-b">
-                        @if ($student->courses->isEmpty())
-                            <span class="text-gray-400 italic">Empty course</span>
-                        @else
-                            @foreach ($student->courses as $course)
-                                <span class="inline-block bg-gray-200 rounded px-2 py-1 text-xs">{{ $course->name }}</span>
-                            @endforeach
-                        @endif
-                    </td>
-                    <td class="py-2 px-4 border-b flex gap-2">
-                        <a href="{{ route('students.edit', $student) }}" class="text-blue-600 hover:underline">Edit</a>
-                        <form action="{{ route('students.destroy', $student) }}" method="POST"
-                            onsubmit="return confirm('Delete this student?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline">Delete</button>
-                        </form>
-                        <!-- Assign Courses Button -->
-                        <button class="bg-gray-200 text-gray-800 px-2 py-1 rounded hover:bg-blue-100"
-                            onclick="openModal({{ $student->id }})" type="button">
-                            Assign Courses
-                        </button>
-                    </td>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">DOB</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Courses
+                    </th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions
+                    </th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @foreach ($students as $student)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-2 px-4 whitespace-nowrap">{{ $student->first_name }} {{ $student->last_name }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ $student->email }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($student->date_of_birth)->format('M d, Y') }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">
+                            @if ($student->courses->isEmpty())
+                                <span class="text-gray-400 italic">Empty course</span>
+                            @else
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach ($student->courses as $course)
+                                        <span
+                                            class="inline-block bg-blue-100 text-blue-800 rounded px-2 py-1 text-xs font-medium">{{ $course->name }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </td>
+                        <td class="py-2 px-4 whitespace-nowrap flex flex-col sm:flex-row gap-2">
+                            <a href="{{ route('students.edit', $student) }}" class="text-blue-600 hover:underline">Edit</a>
+                            <form action="{{ route('students.destroy', $student) }}" method="POST"
+                                onsubmit="return confirm('Delete this student?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                            </form>
+                            <button class="bg-gray-200 text-gray-800 px-2 py-1 rounded hover:bg-blue-100 transition"
+                                onclick="openModal({{ $student->id }})" type="button">
+                                Assign Courses
+                            </button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <!-- Modal -->
     <div id="assignCoursesModal" class="fixed inset-0 z-50 hidden">

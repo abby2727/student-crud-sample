@@ -1,50 +1,60 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <h2 class="text-2xl font-bold">Courses</h2>
-        <a href="{{ route('courses.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add
-            Course</a>
+        <a href="{{ route('courses.create') }}"
+            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">Add Course</a>
     </div>
+
     @if (session('success'))
         <div class="mb-4 text-green-600">{{ session('success') }}</div>
     @endif
-    <table class="min-w-full bg-white rounded shadow">
-        <thead>
-            <tr>
-                <th class="py-2 px-4 border-b">Name</th>
-                <th class="py-2 px-4 border-b">Teacher</th>
-                <th class="py-2 px-4 border-b">Students</th>
-                <th class="py-2 px-4 border-b">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($courses as $course)
+
+    <div class="overflow-x-auto rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200 bg-white">
+            <thead class="bg-gray-50">
                 <tr>
-                    <td class="py-2 px-4 border-b">{{ $course->name }}</td>
-                    <td class="py-2 px-4 border-b">{{ $course->teacher?->first_name }} {{ $course->teacher?->last_name }}
-                    </td>
-                    <td class="py-2 px-4 border-b">
-                        @if ($course->students->isEmpty())
-                            <span class="text-gray-400 italic">No students</span>
-                        @else
-                            @foreach ($course->students as $student)
-                                <span class="inline-block bg-gray-200 rounded px-2 py-1 text-xs">{{ $student->first_name }}
-                                    {{ $student->last_name }}</span>
-                            @endforeach
-                        @endif
-                    </td>
-                    <td class="py-2 px-4 border-b flex gap-2">
-                        <a href="{{ route('courses.edit', $course) }}" class="text-blue-600 hover:underline">Edit</a>
-                        <form action="{{ route('courses.destroy', $course) }}" method="POST"
-                            onsubmit="return confirm('Delete this course?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline">Delete</button>
-                        </form>
-                    </td>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Teacher</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Students
+                    </th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions
+                    </th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @foreach ($courses as $course)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-2 px-4 whitespace-nowrap">{{ $course->name }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">
+                            {{ $course->teacher ? $course->teacher->first_name . ' ' . $course->teacher->last_name : '-' }}
+                        </td>
+                        <td class="py-2 px-4 whitespace-nowrap">
+                            @if ($course->students->isEmpty())
+                                <span class="text-gray-400 italic">No students</span>
+                            @else
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach ($course->students as $student)
+                                        <span
+                                            class="inline-block bg-purple-100 text-purple-800 rounded px-2 py-1 text-xs font-medium">{{ $student->first_name }}
+                                            {{ $student->last_name }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </td>
+                        <td class="py-2 px-4 whitespace-nowrap flex flex-col sm:flex-row gap-2">
+                            <a href="{{ route('courses.edit', $course) }}" class="text-purple-700 hover:underline">Edit</a>
+                            <form action="{{ route('courses.destroy', $course) }}" method="POST"
+                                onsubmit="return confirm('Delete this course?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 @endsection

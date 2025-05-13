@@ -39,12 +39,16 @@
         <div class="mb-4">
             <label class="block mb-1">Assign Courses</label>
             <select name="courses[]" multiple class="w-full border rounded px-3 py-2">
+                <option value="" disabled {{ $student->courses->isEmpty() ? 'selected' : '' }}>-- No Courses --
+                </option>
                 @foreach ($courses as $course)
                     <option value="{{ $course->id }}" {{ $student->courses->contains($course->id) ? 'selected' : '' }}>
                         {{ $course->name }}
                     </option>
                 @endforeach
             </select>
+            <p class="text-xs text-gray-500 mt-1">Hold Ctrl (Windows) or Command (Mac) to select/deselect multiple courses.
+                To deselect all, hold Ctrl/Command and click all selected options.</p>
         </div>
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
         <a href="{{ route('students.index') }}" class="ml-2 text-gray-600 hover:underline">Cancel</a>

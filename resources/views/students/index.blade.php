@@ -45,21 +45,83 @@
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline">Delete</button>
                         </form>
-                        <form action="{{ route('students.updateCourses', $student) }}" method="POST">
-                            @csrf
-                            <select name="courses[]" multiple class="border rounded px-2 py-1 text-xs"
-                                onchange="this.form.submit()">
-                                @foreach (\App\Models\Course::all() as $course)
-                                    <option value="{{ $course->id }}"
-                                        {{ $student->courses->contains($course->id) ? 'selected' : '' }}>
-                                        {{ $course->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
+                        <!-- Assign Courses Button -->
+                        <button class="bg-gray-200 text-gray-800 px-2 py-1 rounded hover:bg-blue-100"
+                            onclick="openModal({{ $student->id }})" type="button">
+                            Assign Courses
+                        </button>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+    <!-- Modal -->
+    <div id="assignCoursesModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+            <h3 class="text-xl font-bold mb-4">Assign Courses</h3>
+            <form id="assignCoursesForm" method="POST">
+                @csrf
+                <div id="coursesCheckboxes" class="mb-4 max-h-60 overflow-y-auto">
+                    <!-- Checkboxes will be injected here -->
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeModal()"
+                        class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
+                </div>
+            </form>
+            <button onclick="closeModal()"
+                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        // Prepare student-course data for JS
+        const studentsCourses = @json($students->mapWithKeys(fn($s) => [$s->id => $s->courses->pluck('id')]));
+        const allCourses = @json(\App\Models\Course::all(['id', 'name']));
+
+        let currentStudentId = null;
+
+        function openModal(studentId) {
+            currentStudentId = studentId;
+            const modal = document.getElementById('assignCoursesModal');
+            const form = document.getElementById('assignCoursesForm');
+            const checkboxesDiv = document.getElementById('coursesCheckboxes');
+
+            // Set form action
+            form.action = `/students/${studentId}/courses`;
+
+            // Clear previous checkboxes
+            checkboxesDiv.innerHTML = '';
+
+            // Get current student's courses
+            const selectedCourses = studentsCourses[studentId] || [];
+
+            // Render checkboxes
+            allCourses.forEach(course => {
+                const checked = selectedCourses.includes(course.id) ? 'checked' : '';
+                checkboxesDiv.innerHTML += `
+                    <div class="mb-2 flex items-center">
+                        <input type="checkbox" name="courses[]" value="${course.id}" id="course_${course.id}" class="mr-2" ${checked}>
+                        <label for="course_${course.id}">${course.name}</label>
+                    </div>
+                `;
+            });
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('assignCoursesModal').classList.add('hidden');
+            currentStudentId = null;
+        }
+
+        // Optional: Close modal on ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
 @endsection

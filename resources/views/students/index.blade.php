@@ -57,8 +57,11 @@
     </table>
 
     <!-- Modal -->
-    <div id="assignCoursesModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+    <div id="assignCoursesModal" class="fixed inset-0 z-50 hidden">
+        <!-- Overlay -->
+        <div class="absolute inset-0" onclick="closeModal()"></div>
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 mx-auto my-20 z-10 flex flex-col">
             <h3 class="text-xl font-bold mb-4">Assign Courses</h3>
             <form id="assignCoursesForm" method="POST">
                 @csrf

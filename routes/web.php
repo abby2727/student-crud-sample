@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/dashboard', 'dashboard');
 
 //* Student routes
+// Update test
 Route::resource('students', StudentController::class);
 
 // For assigning/unassigning courses
